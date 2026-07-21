@@ -19,46 +19,25 @@
             background: #0a0a0a;
             font-family: 'Segoe UI', system-ui, sans-serif;
             padding: 20px;
+        }
+
+        /* ── КОНТЕЙНЕР ВСЕГО ── */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
             position: relative;
         }
 
-        /* ── ГРУСТНЫЙ СМАЙЛИК (фон) ── */
-        .sad-emoji {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 200px;
-            opacity: 0.06;
-            pointer-events: none;
-            transition: all 0.5s ease;
+        /* ── БОЛЬШОЙ СМАЙЛИК НАД КНОПКОЙ ── */
+        .emoji {
+            font-size: 180px;
+            line-height: 1;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             user-select: none;
-            z-index: 0;
-        }
-
-        /* ── ВЕСЁЛЫЙ СМАЙЛИК (появляется при наведении) ── */
-        .happy-emoji {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            font-size: 200px;
-            opacity: 0;
             pointer-events: none;
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            user-select: none;
-            z-index: 0;
-        }
-
-        /* ── КОГДА НАВЕЛИ НА КНОПКУ ── */
-        body.happy .sad-emoji {
-            opacity: 0;
-            transform: translate(-50%, -50%) scale(0.8);
-        }
-
-        body.happy .happy-emoji {
-            opacity: 0.08;
-            transform: translate(-50%, -50%) scale(1);
+            text-shadow: 0 0 60px rgba(255, 255, 255, 0.05);
         }
 
         /* ── КНОПКА ── */
@@ -77,7 +56,6 @@
             text-transform: uppercase;
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
             position: relative;
-            z-index: 1;
             overflow: hidden;
         }
 
@@ -113,15 +91,13 @@
             border-color: #666666;
         }
 
-        /* ── ИНФО ── */
+        /* ── ИНФО (тип устройства) ── */
         .device-info {
             color: #444;
             font-size: 12px;
-            margin-top: 15px;
             letter-spacing: 0.5px;
             text-align: center;
-            position: relative;
-            z-index: 1;
+            margin-top: 10px;
         }
 
         .device-info span {
@@ -149,36 +125,18 @@
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
-
-        /* ── ТЕКСТ ПОД КНОПКОЙ (эмоция) ── */
-        .mood-text {
-            color: #555;
-            font-size: 14px;
-            margin-top: 10px;
-            transition: all 0.3s ease;
-            position: relative;
-            z-index: 1;
-            letter-spacing: 0.5px;
-        }
-
-        body.happy .mood-text {
-            color: #888;
-        }
     </style>
 </head>
 <body>
 
-    <!-- ГРУСТНЫЙ СМАЙЛИК -->
-    <div class="sad-emoji">:(</div>
+    <div class="container">
+        <!-- БОЛЬШОЙ СМАЙЛИК НАД КНОПКОЙ -->
+        <div class="emoji" id="emoji">:(</div>
 
-    <!-- ВЕСЁЛЫЙ СМАЙЛИК -->
-    <div class="happy-emoji">:)</div>
-
-    <div style="display: flex; flex-direction: column; align-items: center;">
+        <!-- КНОПКА -->
         <button class="download-btn" id="downloadBtn">СКАЧАТЬ</button>
 
-        <div class="mood-text" id="moodText">:( Грустно...</div>
-
+        <!-- ТИП УСТРОЙСТВА -->
         <div class="device-info">
             📱 <span id="deviceType">Определение...</span>
         </div>
@@ -192,7 +150,7 @@
             const downloadBtn = document.getElementById('downloadBtn');
             const toast = document.getElementById('toast');
             const deviceType = document.getElementById('deviceType');
-            const moodText = document.getElementById('moodText');
+            const emoji = document.getElementById('emoji');
 
             // ── ОПРЕДЕЛЕНИЕ УСТРОЙСТВА ──
             function getDeviceType() {
@@ -210,28 +168,32 @@
             const device = getDeviceType();
             deviceType.textContent = device === 'phone' ? 'Телефон (APK) 📱' : 'Компьютер (ZIP) 💻';
 
-            // ── СМЕНА НАСТРОЕНИЯ ──
+            // ── СМЕНА СМАЙЛИКА ──
             downloadBtn.addEventListener('mouseenter', function() {
-                document.body.classList.add('happy');
-                moodText.textContent = ':) Радостно!';
+                emoji.textContent = ':)';
+                emoji.style.transform = 'scale(1.1)';
+                emoji.style.textShadow = '0 0 80px rgba(255,255,255,0.15)';
             });
 
             downloadBtn.addEventListener('mouseleave', function() {
-                document.body.classList.remove('happy');
-                moodText.textContent = ':( Грустно...';
+                emoji.textContent = ':(';
+                emoji.style.transform = 'scale(1)';
+                emoji.style.textShadow = '0 0 60px rgba(255,255,255,0.05)';
             });
 
-            // ── ДЛЯ ТАЧ-ЭКРАНОВ (телефоны) ──
+            // ── ДЛЯ ТЕЛЕФОНОВ ──
             downloadBtn.addEventListener('touchstart', function() {
-                document.body.classList.add('happy');
-                moodText.textContent = ':) Радостно!';
+                emoji.textContent = ':)';
+                emoji.style.transform = 'scale(1.1)';
+                emoji.style.textShadow = '0 0 80px rgba(255,255,255,0.15)';
             });
 
             downloadBtn.addEventListener('touchend', function() {
                 setTimeout(() => {
-                    document.body.classList.remove('happy');
-                    moodText.textContent = ':( Грустно...';
-                }, 500);
+                    emoji.textContent = ':(';
+                    emoji.style.transform = 'scale(1)';
+                    emoji.style.textShadow = '0 0 60px rgba(255,255,255,0.05)';
+                }, 300);
             });
 
             // ── УВЕДОМЛЕНИЕ ──
