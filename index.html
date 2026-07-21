@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Скачать</title>
+    <title>Скачать приложение</title>
     <style>
         * {
             margin: 0;
@@ -71,6 +71,18 @@
             border-color: #666666;
         }
 
+        .device-info {
+            color: #444;
+            font-size: 12px;
+            margin-top: 15px;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+
+        .device-info span {
+            color: #666;
+        }
+
         .toast {
             position: fixed;
             bottom: 40px;
@@ -81,12 +93,10 @@
             padding: 12px 28px;
             border-radius: 10px;
             font-size: 14px;
-            font-weight: 400;
             border: 1px solid #2a2a2a;
             opacity: 0;
             transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
             pointer-events: none;
-            letter-spacing: 0.5px;
         }
 
         .toast.show {
@@ -97,7 +107,12 @@
 </head>
 <body>
 
-    <button class="download-btn" id="downloadBtn">СКАЧАТЬ</button>
+    <div style="display: flex; flex-direction: column; align-items: center;">
+        <button class="download-btn" id="downloadBtn">СКАЧАТЬ</button>
+        <div class="device-info">
+            📱 <span id="deviceType">Определение...</span>
+        </div>
+    </div>
 
     <div class="toast" id="toast">Загрузка...</div>
 
@@ -106,6 +121,23 @@
 
             const downloadBtn = document.getElementById('downloadBtn');
             const toast = document.getElementById('toast');
+            const deviceType = document.getElementById('deviceType');
+
+            // ── ОПРЕДЕЛЕНИЕ УСТРОЙСТВА ──
+            function getDeviceType() {
+                const ua = navigator.userAgent || navigator.vendor || window.opera;
+                const isMobile = /android|iphone|ipad|ipod|blackberry|windows phone|webos|iemobile|opera mini/i.test(ua);
+                const isAndroid = /android/i.test(ua);
+                const isIOS = /iphone|ipad|ipod/i.test(ua);
+
+                if (isAndroid || isIOS) {
+                    return 'phone';
+                }
+                return 'desktop';
+            }
+
+            const device = getDeviceType();
+            deviceType.textContent = device === 'phone' ? 'Телефон (APK) 📱' : 'Компьютер (ZIP) 💻';
 
             function showToast() {
                 toast.classList.add('show');
@@ -115,154 +147,36 @@
                 }, 2500);
             }
 
-            // ── ФУНКЦИЯ СОЗДАНИЯ ZIP ──
-            function createZip() {
-                // Создаём структуру ZIP вручную (простой способ без библиотек)
-                const files = [
-                    { name: 'secret.txt', content: 'Это секретный файл' },
-                    { name: 'data.json', content: JSON.stringify({ user: 'friend', level: 99 }) },
-                    { name: 'notes.md', content: '# Привет\n\nЭто твой файл.' }
-                ];
-
-                // Формируем ZIP-архив (упрощённый вариант)
-                let zipData = 'PK\x03\x04'; // Сигнатура ZIP
-
-                let offset = 0;
-                const centralDirectory = [];
-
-                files.forEach(file => {
-                    const content = file.content;
-                    const contentBytes = new TextEncoder().encode(content);
-                    const nameBytes = new TextEncoder().encode(file.name);
-
-                    // Локальный заголовок
-                    const localHeader = new Uint8Array(30 + nameBytes.length);
-                    const view = new DataView(localHeader.buffer);
-
-                    // Сигнатура
-                    view.setUint32(0, 0x04034b50, true);
-                    // Версия
-                    view.setUint16(4, 0x0014, true);
-                    // Флаги
-                    view.setUint16(6, 0x0000, true);
-                    // Метод сжатия (0 - без сжатия)
-                    view.setUint16(8, 0x0000, true);
-                    // Время
-                    view.setUint16(10, 0x0000, true);
-                    // Дата
-                    view.setUint16(12, 0x0000, true);
-                    // CRC32
-                    view.setUint32(14, 0x00000000, true);
-                    // Размер сжатых данных
-                    view.setUint32(18, contentBytes.length, true);
-                    // Размер несжатых данных
-                    view.setUint32(22, contentBytes.length, true);
-                    // Длина имени файла
-                    view.setUint16(26, nameBytes.length, true);
-                    // Длина дополнительного поля
-                    view.setUint16(28, 0x0000, true);
-
-                    localHeader.set(nameBytes, 30);
-
-                    // Добавляем содержимое файла
-                    const fileData = new Uint8Array(contentBytes);
-
-                    // Собираем всё вместе
-                    const totalSize = localHeader.length + fileData.length;
-                    const combined = new Uint8Array(totalSize);
-                    combined.set(localHeader, 0);
-                    combined.set(fileData, localHeader.length);
-
-                    // Добавляем в архив
-                    const newZip = new Uint8Array(zipData.length + combined.length);
-                    newZip.set(zipData, 0);
-                    newZip.set(combined, zipData.length);
-                    zipData = newZip;
-
-                    // Запоминаем для центрального каталога
-                    centralDirectory.push({
-                        name: file.name,
-                        offset: offset,
-                        size: contentBytes.length,
-                        nameBytes: nameBytes
-                    });
-
-                    offset += combined.length;
-                });
-
-                // ── Центральный каталог ──
-                let centralDirData = new Uint8Array(0);
-
-                centralDirectory.forEach(entry => {
-                    const nameBytes = entry.nameBytes;
-                    const header = new Uint8Array(46 + nameBytes.length);
-                    const view = new DataView(header.buffer);
-
-                    view.setUint32(0, 0x02014b50, true);
-                    view.setUint16(4, 0x0014, true);
-                    view.setUint16(6, 0x0014, true);
-                    view.setUint16(8, 0x0000, true);
-                    view.setUint16(10, 0x0000, true);
-                    view.setUint16(12, 0x0000, true);
-                    view.setUint16(14, 0x0000, true);
-                    view.setUint32(16, 0x00000000, true);
-                    view.setUint32(20, entry.size, true);
-                    view.setUint32(24, entry.size, true);
-                    view.setUint16(28, nameBytes.length, true);
-                    view.setUint16(30, 0x0000, true);
-                    view.setUint16(32, 0x0000, true);
-                    view.setUint16(34, 0x0000, true);
-                    view.setUint32(36, 0x00000000, true);
-                    view.setUint32(40, entry.offset, true);
-
-                    header.set(nameBytes, 46);
-
-                    const newCentral = new Uint8Array(centralDirData.length + header.length);
-                    newCentral.set(centralDirData, 0);
-                    newCentral.set(header, centralDirData.length);
-                    centralDirData = newCentral;
-                });
-
-                // ── Конец центрального каталога ──
-                const endHeader = new Uint8Array(22);
-                const endView = new DataView(endHeader.buffer);
-                endView.setUint32(0, 0x06054b50, true);
-                endView.setUint16(4, 0x0000, true);
-                endView.setUint16(6, 0x0000, true);
-                endView.setUint16(8, centralDirectory.length, true);
-                endView.setUint16(10, centralDirectory.length, true);
-                endView.setUint32(12, centralDirData.length, true);
-                endView.setUint32(16, offset, true);
-                endView.setUint16(20, 0x0000, true);
-
-                // ── Собираем финальный ZIP ──
-                const finalZip = new Uint8Array(zipData.length + centralDirData.length + endHeader.length);
-                finalZip.set(zipData, 0);
-                finalZip.set(centralDirData, zipData.length);
-                finalZip.set(endHeader, zipData.length + centralDirData.length);
-
-                return finalZip;
-            }
-
+            // ── СКАЧИВАНИЕ ──
             function downloadFile() {
-                // Создаём ZIP
-                const zipData = createZip();
+                const device = getDeviceType();
 
-                // Создаём Blob
-                const blob = new Blob([zipData], { type: 'application/zip' });
+                let url;
+                let fileName;
 
-                // Скачиваем
+                if (device === 'phone') {
+                    // ═══════════════════════════════════════
+                    // 🔽 СЮДА ВСТАВЬ ССЫЛКУ НА APK 🔽
+                    // ═══════════════════════════════════════
+                    url = 'https://example.com/app.apk';  // ← ЗАМЕНИ НА СВОЮ ССЫЛКУ
+                    fileName = 'app.apk';
+                } else {
+                    // ═══════════════════════════════════════
+                    // 🔽 СЮДА ВСТАВЬ ССЫЛКУ НА ZIP 🔽
+                    // ═══════════════════════════════════════
+                    url = 'https://example.com/app.zip';   // ← ЗАМЕНИ НА СВОЮ ССЫЛКУ
+                    fileName = 'app.zip';
+                }
+
+                // Скачиваем через создание ссылки
                 const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = 'archive.zip';
+                link.href = url;
+                link.download = fileName;
+                link.target = '_blank';
 
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-
-                setTimeout(() => {
-                    URL.revokeObjectURL(link.href);
-                }, 1000);
 
                 showToast();
             }
