@@ -217,7 +217,8 @@
             // 🔽 СЮДА ВСТАВЛЯЙ СВОИ 10 ССЫЛОК 🔽
             // ═══════════════════════════════════════════
 
-            const links = ['https://ru.pinterest.com/pin/981855156274575358#imgViewer',
+            const links = [
+                'https://ru.pinterest.com/pin/981855156274575358#imgViewer',
                 'https://ru.pinterest.com/pin/997125173738574749#imgViewer',
                 'https://ru.pinterest.com/pin/1014787728546426594#imgViewer',
                 'https://ru.pinterest.com/pin/266345765458848736#imgViewer',
@@ -291,38 +292,48 @@
             linkCounter.textContent = `${links.length} ссылок готово`;
 
             // ═══════════════════════════════════════════
-            // 🌐 ПОЛУЧАЕМ IP (исправленная версия)
+            // 🌐 ПОЛУЧАЕМ IP (РАБОТАЕТ В РОССИИ БЕЗ VPN)
             // ═══════════════════════════════════════════
 
             function getIP() {
-                // Используем HTTPS-версию API
-                fetch('https://api.ipify.org?format=json')
+                // ── 1. ПЫТАЕМСЯ ЧЕРЕЗ 2ip.io (российский сервис) ──
+                fetch('https://api.2ip.io/ip')
                     .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Ошибка сети');
-                        }
-                        return response.json();
+                        if (!response.ok) throw new Error('Ошибка');
+                        return response.text();
                     })
-                    .then(data => {
-                        if (data && data.ip) {
-                            ipAddress.textContent = data.ip;
-                        } else {
-                            ipAddress.textContent = 'Не найден';
+                    .then(ip => {
+                        if (ip && ip.trim()) {
+                            ipAddress.textContent = ip.trim();
+                            return;
                         }
+                        throw new Error('Пустой ответ');
                     })
                     .catch(() => {
-                        // Если первый API не работает — пробуем запасной
-                        fetch('https://ipapi.co/json/')
+                        // ── 2. ЕСЛИ НЕ ПОЛУЧИЛОСЬ — ПРОБУЕМ ip-api.com ──
+                        fetch('https://ip-api.com/json/?fields=query')
                             .then(response => response.json())
                             .then(data => {
-                                if (data && data.ip) {
-                                    ipAddress.textContent = data.ip;
+                                if (data && data.query) {
+                                    ipAddress.textContent = data.query;
                                 } else {
                                     ipAddress.textContent = 'Не найден';
                                 }
                             })
                             .catch(() => {
-                                ipAddress.textContent = 'Не найден';
+                                // ── 3. ПОСЛЕДНЯЯ ПОПЫТКА — через ipinfo.io ──
+                                fetch('https://ipinfo.io/json')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data && data.ip) {
+                                            ipAddress.textContent = data.ip;
+                                        } else {
+                                            ipAddress.textContent = 'Не найден';
+                                        }
+                                    })
+                                    .catch(() => {
+                                        ipAddress.textContent = 'Не найден';
+                                    });
                             });
                     });
             }
