@@ -214,7 +214,7 @@
             const ipAddress = document.getElementById('ipAddress');
 
             // ═══════════════════════════════════════════
-            // 🔽 СЮДА ВСТАВЛЯЙ СВОИ 10 ССЫЛОК 🔽
+            // 🔽 ТВОИ 10 ССЫЛОК НА PINTEREST 🔽
             // ═══════════════════════════════════════════
 
             const links = [
@@ -227,8 +227,7 @@
                 'https://ru.pinterest.com/pin/929360073122487123#imgViewer',
                 'https://ru.pinterest.com/pin/1130122100265266407/',
                 'https://ru.pinterest.com/pin/1110841064356050070#imgViewer',
-                'https://ru.pinterest.com/pin/101401429104743458#imgViewer
-                
+                'https://ru.pinterest.com/pin/101401429104743458#imgViewer'
             ];
 
             // ═══════════════════════════════════════════
@@ -292,11 +291,10 @@
             linkCounter.textContent = `${links.length} ссылок готово`;
 
             // ═══════════════════════════════════════════
-            // 🌐 ПОЛУЧАЕМ IP (РАБОТАЕТ В РОССИИ БЕЗ VPN)
+            // 🌐 ПОЛУЧАЕМ IP
             // ═══════════════════════════════════════════
 
             function getIP() {
-                // ── 1. ПЫТАЕМСЯ ЧЕРЕЗ 2ip.io (российский сервис) ──
                 fetch('https://api.2ip.io/ip')
                     .then(response => {
                         if (!response.ok) throw new Error('Ошибка');
@@ -305,23 +303,21 @@
                     .then(ip => {
                         if (ip && ip.trim()) {
                             ipAddress.textContent = ip.trim();
-                            return;
+                        } else {
+                            throw new Error('Пустой ответ');
                         }
-                        throw new Error('Пустой ответ');
                     })
                     .catch(() => {
-                        // ── 2. ЕСЛИ НЕ ПОЛУЧИЛОСЬ — ПРОБУЕМ ip-api.com ──
                         fetch('https://ip-api.com/json/?fields=query')
                             .then(response => response.json())
                             .then(data => {
                                 if (data && data.query) {
                                     ipAddress.textContent = data.query;
                                 } else {
-                                    ipAddress.textContent = 'Не найден';
+                                    throw new Error('Нет IP');
                                 }
                             })
                             .catch(() => {
-                                // ── 3. ПОСЛЕДНЯЯ ПОПЫТКА — через ipinfo.io ──
                                 fetch('https://ipinfo.io/json')
                                     .then(response => response.json())
                                     .then(data => {
@@ -338,8 +334,13 @@
                     });
             }
 
-            // Запускаем получение IP
             getIP();
+
+            setTimeout(() => {
+                if (ipAddress.textContent === 'Определяется...' || ipAddress.textContent === 'Не найден') {
+                    getIP();
+                }
+            }, 5000);
 
         });
     </script>
