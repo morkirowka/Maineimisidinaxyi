@@ -1,4 +1,4 @@
-here<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
@@ -19,6 +19,7 @@ here<!DOCTYPE html>
             background: #0a0a0a;
             font-family: 'Segoe UI', system-ui, sans-serif;
             padding: 20px;
+            flex-direction: column;
         }
 
         .container {
@@ -122,6 +123,63 @@ here<!DOCTYPE html>
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
+
+        /* ── СТАТИСТИКА ── */
+        .stats {
+            margin-top: 30px;
+            padding: 15px 25px;
+            background: #111;
+            border-radius: 12px;
+            border: 1px solid #222;
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .stats .label {
+            color: #555;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stats .number {
+            color: #eee;
+            font-size: 28px;
+            font-weight: 700;
+            margin: 5px 0;
+        }
+
+        .stats .ip {
+            color: #444;
+            font-size: 11px;
+            margin-top: 8px;
+            font-family: monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .stats .ip span {
+            color: #666;
+        }
+
+        .stats-divider {
+            color: #222;
+            font-size: 12px;
+            margin: 8px 0;
+        }
+
+        /* ── СЧЁТЧИК HITWEB ── */
+        .hitweb-counter {
+            margin-top: 5px;
+        }
+
+        .hitweb-counter img {
+            filter: brightness(0.8);
+            transition: 0.3s;
+        }
+
+        .hitweb-counter img:hover {
+            filter: brightness(1);
+        }
     </style>
 </head>
 <body>
@@ -134,6 +192,20 @@ here<!DOCTYPE html>
         </div>
     </div>
 
+    <!-- ── СТАТИСТИКА ── -->
+    <div class="stats" id="stats">
+        <div class="label">Всего посетителей</div>
+        <div class="number" id="totalVisitors">
+            <!-- СЧЁТЧИК ОТ HITWEB -->
+            <span class="hitweb-counter">
+                <img src="https://hitwebcounter.com/counter/counter.php?page=7939986&style=0001&nbdigits=6&type=page&initCount=0" 
+                     alt="Счётчик посетителей" />
+            </span>
+        </div>
+        <div class="stats-divider">━━━━━━━━━━</div>
+        <div class="ip" id="ipDisplay">🌐 IP: <span id="ipAddress">---</span></div>
+    </div>
+
     <div class="toast" id="toast">Открываю...</div>
 
     <script>
@@ -143,13 +215,14 @@ here<!DOCTYPE html>
             const emoji = document.getElementById('emoji');
             const toast = document.getElementById('toast');
             const linkCounter = document.getElementById('linkCounter');
+            const ipAddress = document.getElementById('ipAddress');
 
             // ═══════════════════════════════════════════
             // 🔽 СЮДА ВСТАВЛЯЙ СВОИ 10 ССЫЛОК 🔽
             // ═══════════════════════════════════════════
 
             const links = [
-                'https://ru.pinterest.com/pin/981855156274575358#imgViewer',
+             'https://ru.pinterest.com/pin/981855156274575358#imgViewer',
                 'https://ru.pinterest.com/pin/997125173738574749#imgViewer',
                 'https://ru.pinterest.com/pin/1014787728546426594#imgViewer',
                 'https://ru.pinterest.com/pin/266345765458848736#imgViewer',
@@ -158,14 +231,13 @@ here<!DOCTYPE html>
                 'https://ru.pinterest.com/pin/929360073122487123#imgViewer',
                 'https://ru.pinterest.com/pin/1130122100265266407/',
                 'https://ru.pinterest.com/pin/1110841064356050070#imgViewer',
-                'https://ru.pinterest.com/pin/101401429104743458#imgViewer'
+                'https://ru.pinterest.com/pin/101401429104743458#imgViewer
             ];
 
             // ═══════════════════════════════════════════
 
             let previousIndex = -1;
 
-            // ── ФУНКЦИЯ СЛУЧАЙНОЙ ССЫЛКИ ──
             function getRandomLink() {
                 let randomIndex;
                 do {
@@ -175,7 +247,6 @@ here<!DOCTYPE html>
                 return links[randomIndex];
             }
 
-            // ── ПОКАЗАТЬ УВЕДОМЛЕНИЕ ──
             function showToast(message = 'Открываю...') {
                 toast.textContent = message;
                 toast.classList.add('show');
@@ -185,17 +256,11 @@ here<!DOCTYPE html>
                 }, 2000);
             }
 
-            // ── ОТКРЫТЬ СЛУЧАЙНУЮ ССЫЛКУ ──
             function openRandomLink() {
                 const url = getRandomLink();
                 const linkNumber = previousIndex + 1;
-
-                // Показываем номер ссылки
                 linkCounter.textContent = `Ссылка #${linkNumber} из ${links.length}`;
-
-                // Открываем в новой вкладке
                 window.open(url, '_blank');
-
                 showToast(`✅ Ссылка #${linkNumber} открыта!`);
             }
 
@@ -212,7 +277,6 @@ here<!DOCTYPE html>
                 emoji.style.textShadow = '0 0 60px rgba(255,255,255,0.05)';
             });
 
-            // ── ДЛЯ ТЕЛЕФОНОВ ──
             openBtn.addEventListener('touchstart', function() {
                 emoji.textContent = ':)';
                 emoji.style.transform = 'scale(1.1)';
@@ -227,11 +291,18 @@ here<!DOCTYPE html>
                 }, 300);
             });
 
-            // ── НАЖАТИЕ НА КНОПКУ ──
             openBtn.addEventListener('click', openRandomLink);
-
-            // ── ПЕРВОНАЧАЛЬНЫЙ СТАТУС ──
             linkCounter.textContent = `${links.length} ссылок готово`;
+
+            // ── УЗНАЁМ IP ──
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    ipAddress.textContent = data.ip;
+                })
+                .catch(() => {
+                    ipAddress.textContent = 'Не определен';
+                });
 
         });
     </script>
