@@ -5,179 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Открыть ссылку</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #0a0a0a;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            padding: 20px;
-            flex-direction: column;
-        }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 30px;
-            position: relative;
-        }
-
-        .emoji {
-            font-size: 180px;
-            line-height: 1;
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            user-select: none;
-            pointer-events: none;
-            text-shadow: 0 0 60px rgba(255, 255, 255, 0.05);
-        }
-
-        .open-btn {
-            display: inline-block;
-            padding: 18px 60px;
-            font-size: 18px;
-            font-weight: 600;
-            color: #ffffff;
-            background: #000000;
-            border: 2px solid #2a2a2a;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
-            position: relative;
-            overflow: hidden;
-            border: none;
-        }
-
-        .open-btn::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, #1a1a1a, #333333, #1a1a1a);
-            background-size: 400% 400%;
-            border-radius: 14px;
-            z-index: -1;
-            animation: glow 6s ease infinite;
-            opacity: 0.3;
-        }
-
-        @keyframes glow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .open-btn:hover {
-            border: 2px solid #444444;
-            transform: scale(1.03);
-            box-shadow: 0 0 50px rgba(255, 255, 255, 0.05);
-        }
-
-        .open-btn:active {
-            transform: scale(0.95);
-            border: 2px solid #666666;
-        }
-
-        .device-info {
-            color: #444;
-            font-size: 12px;
-            letter-spacing: 0.5px;
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        .device-info span {
-            color: #666;
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%) translateY(80px);
-            background: #1a1a1a;
-            color: #aaa;
-            padding: 12px 28px;
-            border-radius: 10px;
-            font-size: 14px;
-            border: 1px solid #2a2a2a;
-            opacity: 0;
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            pointer-events: none;
-            z-index: 999;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .stats {
-            margin-top: 30px;
-            padding: 15px 25px;
-            background: #111;
-            border-radius: 12px;
-            border: 1px solid #222;
-            text-align: center;
-            min-width: 200px;
-        }
-
-        .stats .label {
-            color: #555;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .stats .number {
-            color: #eee;
-            font-size: 28px;
-            font-weight: 700;
-            margin: 5px 0;
-        }
-
-        .stats .ip {
-            color: #444;
-            font-size: 11px;
-            margin-top: 8px;
-            font-family: monospace;
-            letter-spacing: 0.5px;
-        }
-
-        .stats .ip span {
-            color: #666;
-        }
-
-        .stats-divider {
-            color: #222;
-            font-size: 12px;
-            margin: 8px 0;
-        }
-
-        .hitweb-counter {
-            margin-top: 5px;
-        }
-
-        .hitweb-counter img {
-            filter: brightness(0.8);
-            transition: 0.3s;
-        }
-
-        .hitweb-counter img:hover {
-            filter: brightness(1);
-        }
+        /* ... (весь твой стиль остаётся без изменений) ... */
+        /* Я не стал дублировать весь CSS для краткости, но он полностью сохраняется */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { min-height: 100vh; display: flex; justify-content: center; align-items: center; background: #0a0a0a; font-family: 'Segoe UI', system-ui, sans-serif; padding: 20px; flex-direction: column; }
+        .container { display: flex; flex-direction: column; align-items: center; gap: 30px; position: relative; }
+        .emoji { font-size: 180px; line-height: 1; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); user-select: none; pointer-events: none; text-shadow: 0 0 60px rgba(255, 255, 255, 0.05); }
+        .open-btn { display: inline-block; padding: 18px 60px; font-size: 18px; font-weight: 600; color: #ffffff; background: #000000; border: 2px solid #2a2a2a; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; letter-spacing: 1px; text-transform: uppercase; box-shadow: 0 0 30px rgba(0, 0, 0, 0.8); position: relative; overflow: hidden; border: none; }
+        .open-btn::before { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; background: linear-gradient(45deg, #1a1a1a, #333333, #1a1a1a); background-size: 400% 400%; border-radius: 14px; z-index: -1; animation: glow 6s ease infinite; opacity: 0.3; }
+        @keyframes glow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .open-btn:hover { border: 2px solid #444444; transform: scale(1.03); box-shadow: 0 0 50px rgba(255, 255, 255, 0.05); }
+        .open-btn:active { transform: scale(0.95); border: 2px solid #666666; }
+        .device-info { color: #444; font-size: 12px; letter-spacing: 0.5px; text-align: center; margin-top: 10px; }
+        .device-info span { color: #666; }
+        .toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1a1a1a; color: #aaa; padding: 12px 28px; border-radius: 10px; font-size: 14px; border: 1px solid #2a2a2a; opacity: 0; transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; z-index: 999; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .stats { margin-top: 30px; padding: 15px 25px; background: #111; border-radius: 12px; border: 1px solid #222; text-align: center; min-width: 200px; }
+        .stats .label { color: #555; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+        .stats .number { color: #eee; font-size: 28px; font-weight: 700; margin: 5px 0; }
+        .stats .ip { color: #444; font-size: 11px; margin-top: 8px; font-family: monospace; letter-spacing: 0.5px; }
+        .stats .ip span { color: #666; }
+        .stats-divider { color: #222; font-size: 12px; margin: 8px 0; }
+        .hitweb-counter { margin-top: 5px; }
+        .hitweb-counter img { filter: brightness(0.8); transition: 0.3s; }
+        .hitweb-counter img:hover { filter: brightness(1); }
     </style>
 </head>
 <body>
@@ -214,10 +65,11 @@
             const ipAddress = document.getElementById('ipAddress');
 
             // ═══════════════════════════════════════════
-            // 🔽 ТВОИ 10 ССЫЛОК НА PINTEREST 🔽
+            // 🔽 ВСЕ ТВОИ ССЫЛКИ (15 ШТУК) 🔽
             // ═══════════════════════════════════════════
 
             const links = [
+                // Pinterest (10 шт.)
                 'https://ru.pinterest.com/pin/981855156274575358#imgViewer',
                 'https://ru.pinterest.com/pin/997125173738574749#imgViewer',
                 'https://ru.pinterest.com/pin/1014787728546426594#imgViewer',
@@ -227,7 +79,14 @@
                 'https://ru.pinterest.com/pin/929360073122487123#imgViewer',
                 'https://ru.pinterest.com/pin/1130122100265266407/',
                 'https://ru.pinterest.com/pin/1110841064356050070#imgViewer',
-                'https://ru.pinterest.com/pin/101401429104743458#imgViewer'
+                'https://ru.pinterest.com/pin/101401429104743458#imgViewer',
+                
+                // Новые ссылки (5 шт.)
+                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMNLrrkACARBpTD1mIfDVmY_TBipnpmbhpeiNNO2I9Ag&s=10',
+                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGh-BeoXIy7aWeABlesNYSyNBRK4IobrKR-sNLzM-zOw&s=10',
+                'https://fapreactor.com/post/5653973',
+                'https://fapreactor.com/post/6019905',
+                'https://fapreactor.com/post/5653964'
             ];
 
             // ═══════════════════════════════════════════
