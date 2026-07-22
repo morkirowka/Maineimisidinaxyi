@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ОТКРЫТЬ ССЫЛКУ</title>
+    <title>Открыть ссылку</title>
     <style>
         * {
             margin: 0;
@@ -21,7 +21,6 @@
             padding: 20px;
         }
 
-        /* ── КОНТЕЙНЕР ВСЕГО ── */
         .container {
             display: flex;
             flex-direction: column;
@@ -30,7 +29,6 @@
             position: relative;
         }
 
-        /* ── БОЛЬШОЙ СМАЙЛИК НАД КНОПКОЙ ── */
         .emoji {
             font-size: 180px;
             line-height: 1;
@@ -40,8 +38,7 @@
             text-shadow: 0 0 60px rgba(255, 255, 255, 0.05);
         }
 
-        /* ── КНОПКА ── */
-        .download-btn {
+        .open-btn {
             display: inline-block;
             padding: 18px 60px;
             font-size: 18px;
@@ -57,9 +54,10 @@
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
             position: relative;
             overflow: hidden;
+            border: none;
         }
 
-        .download-btn::before {
+        .open-btn::before {
             content: '';
             position: absolute;
             top: -2px;
@@ -80,18 +78,17 @@
             100% { background-position: 0% 50%; }
         }
 
-        .download-btn:hover {
-            border-color: #444444;
+        .open-btn:hover {
+            border: 2px solid #444444;
             transform: scale(1.03);
             box-shadow: 0 0 50px rgba(255, 255, 255, 0.05);
         }
 
-        .download-btn:active {
+        .open-btn:active {
             transform: scale(0.95);
-            border-color: #666666;
+            border: 2px solid #666666;
         }
 
-        /* ── ИНФО (тип устройства) ── */
         .device-info {
             color: #444;
             font-size: 12px;
@@ -130,65 +127,99 @@
 <body>
 
     <div class="container">
-        <!-- БОЛЬШОЙ СМАЙЛИК НАД КНОПКОЙ -->
         <div class="emoji" id="emoji">:(</div>
-
-        <!-- КНОПКА -->
-        <button class="download-btn" id="downloadBtn">ОТКРЫТЬ ССЫЛКУ</button>
-
-        <!-- ТИП УСТРОЙСТВА -->
+        <button class="open-btn" id="openBtn">ОТКРЫТЬ ССЫЛКУ</button>
         <div class="device-info">
-            📱 <span id="deviceType">Определение...</span>
+            📱 <span id="linkCounter">Готово...</span>
         </div>
     </div>
 
-    <div class="toast" id="toast">Загрузка...</div>
+    <div class="toast" id="toast">Открываю...</div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
-            const downloadBtn = document.getElementById('downloadBtn');
-            const toast = document.getElementById('toast');
-            const deviceType = document.getElementById('deviceType');
+            const openBtn = document.getElementById('openBtn');
             const emoji = document.getElementById('emoji');
+            const toast = document.getElementById('toast');
+            const linkCounter = document.getElementById('linkCounter');
 
-            // ── ОПРЕДЕЛЕНИЕ УСТРОЙСТВА ──
-            function getDeviceType() {
-                const ua = navigator.userAgent || navigator.vendor || window.opera;
-                const isMobile = /android|iphone|ipad|ipod|blackberry|windows phone|webos|iemobile|opera mini/i.test(ua);
-                const isAndroid = /android/i.test(ua);
-                const isIOS = /iphone|ipad|ipod/i.test(ua);
+            // ═══════════════════════════════════════════
+            // 🔽 СЮДА ВСТАВЛЯЙ СВОИ 10 ССЫЛОК 🔽
+            // ═══════════════════════════════════════════
 
-                if (isAndroid || isIOS) {
-                    return 'phone';
-                }
-                return 'desktop';
+            const links = [
+                'https://morkirowka.github.io/Maineimisidinaxyi/',
+                'https://example.com/',
+                'https://google.com/',
+                'https://youtube.com/',
+                'https://github.com/',
+                'https://vk.com/',
+                'https://t.me/',
+                'https://discord.com/',
+                'https://reddit.com/',
+                'https://twitter.com/'
+            ];
+
+            // ═══════════════════════════════════════════
+
+            let previousIndex = -1;
+
+            // ── ФУНКЦИЯ СЛУЧАЙНОЙ ССЫЛКИ ──
+            function getRandomLink() {
+                let randomIndex;
+                do {
+                    randomIndex = Math.floor(Math.random() * links.length);
+                } while (randomIndex === previousIndex && links.length > 1);
+                previousIndex = randomIndex;
+                return links[randomIndex];
             }
 
-            const device = getDeviceType();
-            deviceType.textContent = device === 'phone' ? 'Телефон (APK) 📱' : 'Компьютер (ZIP) 💻';
+            // ── ПОКАЗАТЬ УВЕДОМЛЕНИЕ ──
+            function showToast(message = 'Открываю...') {
+                toast.textContent = message;
+                toast.classList.add('show');
+                clearTimeout(window.toastTimer);
+                window.toastTimer = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            }
+
+            // ── ОТКРЫТЬ СЛУЧАЙНУЮ ССЫЛКУ ──
+            function openRandomLink() {
+                const url = getRandomLink();
+                const linkNumber = previousIndex + 1;
+
+                // Показываем номер ссылки
+                linkCounter.textContent = `Ссылка #${linkNumber} из ${links.length}`;
+
+                // Открываем в новой вкладке
+                window.open(url, '_blank');
+
+                showToast(`✅ Ссылка #${linkNumber} открыта!`);
+            }
 
             // ── СМЕНА СМАЙЛИКА ──
-            downloadBtn.addEventListener('mouseenter', function() {
+            openBtn.addEventListener('mouseenter', function() {
                 emoji.textContent = ':)';
                 emoji.style.transform = 'scale(1.1)';
                 emoji.style.textShadow = '0 0 80px rgba(255,255,255,0.15)';
             });
 
-            downloadBtn.addEventListener('mouseleave', function() {
+            openBtn.addEventListener('mouseleave', function() {
                 emoji.textContent = ':(';
                 emoji.style.transform = 'scale(1)';
                 emoji.style.textShadow = '0 0 60px rgba(255,255,255,0.05)';
             });
 
             // ── ДЛЯ ТЕЛЕФОНОВ ──
-            downloadBtn.addEventListener('touchstart', function() {
+            openBtn.addEventListener('touchstart', function() {
                 emoji.textContent = ':)';
                 emoji.style.transform = 'scale(1.1)';
                 emoji.style.textShadow = '0 0 80px rgba(255,255,255,0.15)';
             });
 
-            downloadBtn.addEventListener('touchend', function() {
+            openBtn.addEventListener('touchend', function() {
                 setTimeout(() => {
                     emoji.textContent = ':(';
                     emoji.style.transform = 'scale(1)';
@@ -196,49 +227,11 @@
                 }, 300);
             });
 
-            // ── УВЕДОМЛЕНИЕ ──
-            function showToast() {
-                toast.classList.add('show');
-                clearTimeout(window.toastTimer);
-                window.toastTimer = setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 2500);
-            }
+            // ── НАЖАТИЕ НА КНОПКУ ──
+            openBtn.addEventListener('click', openRandomLink);
 
-            // ── СКАЧИВАНИЕ ──
-            function downloadFile() {
-                const device = getDeviceType();
-
-                // ═══════════════════════════════════════
-                // 🔽 СЮДА ВСТАВЬ СВОИ ССЫЛКИ 🔽
-                // ═══════════════════════════════════════
-
-                let url;
-                let fileName;
-
-                if (device === 'phone') {
-                    url = 'https://ru.pinterest.com/pin/964685182670175328#imgViewer';  // ← ССЫЛКА НА APK
-                    fileName = 'app.apk';
-                } else {
-                    url = 'https://ru.pinterest.com/pin/871516965413505710#imgViewer';   // ← ССЫЛКА НА ZIP
-                    fileName = 'app.zip';
-                }
-
-                // ═══════════════════════════════════════
-
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = fileName;
-                link.target = '_blank';
-
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-
-                showToast();
-            }
-
-            downloadBtn.addEventListener('click', downloadFile);
+            // ── ПЕРВОНАЧАЛЬНЫЙ СТАТУС ──
+            linkCounter.textContent = `${links.length} ссылок готово`;
 
         });
     </script>
