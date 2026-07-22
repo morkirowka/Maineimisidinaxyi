@@ -124,7 +124,6 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        /* ── СТАТИСТИКА ── */
         .stats {
             margin-top: 30px;
             padding: 15px 25px;
@@ -167,7 +166,6 @@
             margin: 8px 0;
         }
 
-        /* ── СЧЁТЧИК HITWEB ── */
         .hitweb-counter {
             margin-top: 5px;
         }
@@ -192,18 +190,16 @@
         </div>
     </div>
 
-    <!-- ── СТАТИСТИКА ── -->
     <div class="stats" id="stats">
         <div class="label">Всего посетителей</div>
-        <div class="number" id="totalVisitors">
-            <!-- СЧЁТЧИК ОТ HITWEB -->
+        <div class="number">
             <span class="hitweb-counter">
                 <img src="https://hitwebcounter.com/counter/counter.php?page=7939986&style=0001&nbdigits=6&type=page&initCount=0" 
                      alt="Счётчик посетителей" />
             </span>
         </div>
         <div class="stats-divider">━━━━━━━━━━</div>
-        <div class="ip" id="ipDisplay">🌐 IP: <span id="ipAddress">---</span></div>
+        <div class="ip" id="ipDisplay">🌐 IP: <span id="ipAddress">Определяется...</span></div>
     </div>
 
     <div class="toast" id="toast">Открываю...</div>
@@ -221,8 +217,7 @@
             // 🔽 СЮДА ВСТАВЛЯЙ СВОИ 10 ССЫЛОК 🔽
             // ═══════════════════════════════════════════
 
-            const links = [
-             'https://ru.pinterest.com/pin/981855156274575358#imgViewer',
+            const links = ['https://ru.pinterest.com/pin/981855156274575358#imgViewer',
                 'https://ru.pinterest.com/pin/997125173738574749#imgViewer',
                 'https://ru.pinterest.com/pin/1014787728546426594#imgViewer',
                 'https://ru.pinterest.com/pin/266345765458848736#imgViewer',
@@ -232,6 +227,7 @@
                 'https://ru.pinterest.com/pin/1130122100265266407/',
                 'https://ru.pinterest.com/pin/1110841064356050070#imgViewer',
                 'https://ru.pinterest.com/pin/101401429104743458#imgViewer
+                
             ];
 
             // ═══════════════════════════════════════════
@@ -294,15 +290,45 @@
             openBtn.addEventListener('click', openRandomLink);
             linkCounter.textContent = `${links.length} ссылок готово`;
 
-            // ── УЗНАЁМ IP ──
-            fetch('https://api.ipify.org?format=json')
-                .then(response => response.json())
-                .then(data => {
-                    ipAddress.textContent = data.ip;
-                })
-                .catch(() => {
-                    ipAddress.textContent = 'Не определен';
-                });
+            // ═══════════════════════════════════════════
+            // 🌐 ПОЛУЧАЕМ IP (исправленная версия)
+            // ═══════════════════════════════════════════
+
+            function getIP() {
+                // Используем HTTPS-версию API
+                fetch('https://api.ipify.org?format=json')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Ошибка сети');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data && data.ip) {
+                            ipAddress.textContent = data.ip;
+                        } else {
+                            ipAddress.textContent = 'Не найден';
+                        }
+                    })
+                    .catch(() => {
+                        // Если первый API не работает — пробуем запасной
+                        fetch('https://ipapi.co/json/')
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data && data.ip) {
+                                    ipAddress.textContent = data.ip;
+                                } else {
+                                    ipAddress.textContent = 'Не найден';
+                                }
+                            })
+                            .catch(() => {
+                                ipAddress.textContent = 'Не найден';
+                            });
+                    });
+            }
+
+            // Запускаем получение IP
+            getIP();
 
         });
     </script>
